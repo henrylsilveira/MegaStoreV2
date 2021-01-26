@@ -5,7 +5,6 @@
   </div>
 </div>
 
-
 <div class="item">
   <div>Email</div>
   <div class="input">
@@ -16,7 +15,13 @@
 <div class="item">
   <div>Senha</div>
   <div class="input">
-    <input type="password" name="password" placeholder="Escolha uma senha segura" value="{{ user.password }}">
+    <input type="password" name="password" 
+      {% if not user.id %} 
+        placeholder="Escolha uma senha segura"
+      {% else %}
+      placeholder="Digite sua senha para atualizar seu cadastro."
+      {% endif %}
+    >
   </div>
 </div>
 

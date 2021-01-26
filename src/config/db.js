@@ -5,5 +5,5 @@ module.exports = new Pool ({
     password: '919364',
     host: "localhost",
     port: 5432,
-    database: "megaStore"
+    database: "megastore"
 });
