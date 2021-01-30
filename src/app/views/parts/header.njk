@@ -30,9 +30,11 @@
             <i class="material-icons">account_circle</i>
             Minha Conta
           </a>
+
+          {% if session.userId %}
           <ul class="submenu">
             <li>
-              <a href="/users">Configurações</a>
+              <a href="/users">Minha Conta</a>
             </li>
             <li>
               <a href="/buying">Meus Pedidos</a>
@@ -46,6 +48,8 @@
               </form>
             </li>
           </ul>
+          {% endif %}
+
         </li>
       </ul>
     </nav>
