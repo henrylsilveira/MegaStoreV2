@@ -33,6 +33,9 @@ async function forgot(req,res,next) {
             user: req.body,
             error: "Email não cadastrado!"
         })
+
+        req.user = user
+
         next()
     } catch (err) {
        console.error(err)
