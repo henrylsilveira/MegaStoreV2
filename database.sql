@@ -89,3 +89,19 @@ CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 -- ADICION A COLUNA DE TOKEN PARA O PEDIDO DE RECUPERACÃO DE SENHA
 ALTER TABLE "users" ADD COLUMN reset_token text;
 ALTER TABLE "users" ADD COLUMN reset_token_expires text;
+
+-- EFEITO CASCATA DE DELEÇÃO DE USUARIO E PRODUTOS
+
+ALTER TABLE "products"
+DROP CONSTRAINT products_user_id_fkey,
+ADD CONSTRAINT products_user_id_fkey
+FOREIGN KEY ("user_id")
+REFERENCES "users" ("id")
+ON DELETE CASCADE;
+
+ALTER TABLE "files"
+DROP CONSTRAINT files_product_id_fkey,
+ADD CONSTRAINT files_product_id_fkey
+FOREIGN KEY ("product_id")
+REFERENCES "products" ("id")
+ON DELETE CASCADE;
