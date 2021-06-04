@@ -21,7 +21,7 @@ routes.post('/forgot-password', SessionValidator.forgot, SessionController.forgo
 routes.post('/password-reset', SessionValidator.reset, SessionController.reset)
 
 
-// //USER REGISTER UseController(criação,atualização,remoção)
+// USER REGISTER UseController(criação,atualização,remoção)
 routes.get('/register', UserController.registerForm)
 routes.post('/register', UserValidator.post, UserController.post)
 

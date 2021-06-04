@@ -2,13 +2,13 @@ const db = require('../../config/db')
 
 function find(filters, table) {
     let query = `SELECT * FROM ${table}`
-
+    
     if (filters) {
         Object.keys(filters).map(key => {
-            query += `${key}`
-
+            query += ` ${key} `
+            
             Object.keys(filters[key]).map(field => {
-                query += `${field} = '${filters[key][field]}'`
+                query += `${field} = ' ${filters[key][field].id} '`
             })
         })
     }
@@ -31,6 +31,7 @@ const Base = {
         return results.rows[0]
     },
     async findOne(filters) {
+        console.log(filters)
         const results = await find(filters, this.table)
         return results.rows[0]
     },
