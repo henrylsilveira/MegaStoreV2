@@ -1,33 +1,68 @@
+const { hash } = require('bcryptjs');
+const { unlinkSync } = require('fs');
+
 const User = require('../models/User');
-const { formatCep, formatCpfCnpj } = require("../../lib/utils")
+const Product = require ('../models/Product');
+const { formatCep, formatCpfCnpj} = require("../../lib/utils")
 
 module.exports = {
     registerForm(req, res) {
         return res.render("users/register");
     },
-    async show(req,res){
-        const { user } = req
+    async show(req, res) {
+        try {
+            const {
+                user
+            } = req
 
-        user.cpf_cnpj = formatCpfCnpj(user.cpf_cnpj)
-        user.cep = formatCep(user.cep)
+            user.cpf_cnpj = formatCpfCnpj(user.cpf_cnpj)
+            user.cep = formatCep(user.cep)
 
-        return res.render('users/index', { user });
+            return res.render('users/index', {
+                user
+            });
+        } catch (error) {
+            console.error(error)
+        }
     },
     async post(req, res) {
 
-        const userId = await User.create(req.body);
-
-        req.session.userId = userId;
-        
-        return res.redirect('/users');
-    },
-    async update(req, res){
         try {
-            const { user } = req
-            let { name, email, cpf_cnpj, cep, address } = req.body
-
+            const{ name, email, password, cpf_cnpj, cep, address } = req.body
+            password = await hash(password, 8)
             cpf_cnpj = cpf_cnpj.replace(/\D/g,"")
             cep = cep.replace(/\D/g,"")
+
+            const userId = await User.create({
+                name,
+                email,
+                cpf_cnpj,
+                cep,
+                address
+            });
+
+            req.session.userId = userId;
+
+            return res.redirect('/users');
+        } catch (error) {
+            console.error(error)
+        }
+    },
+    async update(req, res) {
+        try {
+            const {
+                user
+            } = req
+            let {
+                name,
+                email,
+                cpf_cnpj,
+                cep,
+                address
+            } = req.body
+
+            cpf_cnpj = cpf_cnpj.replace(/\D/g, "")
+            cep = cep.replace(/\D/g, "")
 
             await User.update(user.id, {
                 name,
@@ -42,23 +77,40 @@ module.exports = {
                 success: "Conta atualizada com sucesso."
             })
 
-        } catch(err) {
+        } catch (err) {
             console.error(err)
             return res.render("users/index", {
                 error: "Algum erro aconteceu!"
             })
         }
     },
-    async delete(req, res){
+    async delete(req, res) {
         try {
+            const products = await Product.findAll({ where: {user_id: req.body}})
+
+            const allFilesPromise = products.map(product => Product.files(product.id))
+
+            let promiseResults = await Promise.all(allFilesPromise)
+
             await User.delete(req.body.id)
             req.session.destroy()
+
+
+            promiseResults.map(results => {
+                results.rows.map(file =>{
+                    try {
+                        unlinkSync(file.path)
+                    } catch (error) {
+                        console.error(error);
+                    }
+                })
+            })
 
             return res.render("session/login", {
                 success: "Conta deletada com sucesso!"
             })
-            
-        } catch(err) {
+
+        } catch (err) {
             console.error(err)
             return res.render("users/index", {
                 user: req.body,

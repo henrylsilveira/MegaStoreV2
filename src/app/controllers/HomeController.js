@@ -6,7 +6,7 @@ module.exports = {
     async index(req, res){
 
         try {
-            let results = await Product.findAll()
+            let products = await Product.findAll()
 
             if(!products) return res.send("Products not found!")
 

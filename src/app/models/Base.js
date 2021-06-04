@@ -1,7 +1,4 @@
 const db = require('../../config/db')
-const {
-    create
-} = require('./Product')
 
 function find(filters, table) {
     let query = `SELECT * FROM ${table}`
@@ -15,15 +12,11 @@ function find(filters, table) {
             })
         })
     }
-
-
     return db.query(query)
 }
 
 const Base = {
-    init({
-        table
-    }) {
+    init({ table }) {
         if (!table) throw new Error('Invalid Params')
         this.table = table
 
@@ -52,7 +45,7 @@ const Base = {
 
             Object.keys(fields).map(key => {
                 keys.push(key)
-                values.push(fields[key])
+                values.push(`'${fields[key]}'`)
             })
 
             const query = `INSERT INTO ${this.table} (${keys.join(',')}) 
@@ -87,6 +80,4 @@ const Base = {
     },
 }
 
-module.exports = {
-    Base
-}
+module.exports = Base;
