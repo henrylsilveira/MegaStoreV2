@@ -3,6 +3,8 @@ const { unlinkSync } = require('fs');
 
 const User = require('../models/User');
 const Product = require ('../models/Product');
+const LoadProductService = require('../services/LoadProductService')
+
 const { formatCep, formatCpfCnpj} = require("../../lib/utils")
 
 module.exports = {
@@ -28,7 +30,7 @@ module.exports = {
     async post(req, res) {
 
         try {
-            const{ name, email, password, cpf_cnpj, cep, address } = req.body
+            let { name, email, password, cpf_cnpj, cep, address } = req.body
             password = await hash(password, 8)
             cpf_cnpj = cpf_cnpj.replace(/\D/g,"")
             cep = cep.replace(/\D/g,"")
@@ -36,6 +38,7 @@ module.exports = {
             const userId = await User.create({
                 name,
                 email,
+                password,
                 cpf_cnpj,
                 cep,
                 address
@@ -118,6 +121,12 @@ module.exports = {
                 error: "Erro ao tentar deletar a conta!"
             })
         }
+    },
+    async ads(req, res){
+        const products = await LoadProductService.load('products', {
+            where: { user_id: req.session.userId }
+        })
+        return res.render("users/ads", { products })
     }
 }
 

@@ -8,7 +8,7 @@ function find(filters, table) {
             query += ` ${key} `
             
             Object.keys(filters[key]).map(field => {
-                query += `${field} = ' ${filters[key][field].id} '`
+                query += `${field} = ' ${filters[key][field]} '`
             })
         })
     }
@@ -31,7 +31,7 @@ const Base = {
         return results.rows[0]
     },
     async findOne(filters) {
-        console.log(filters)
+        
         const results = await find(filters, this.table)
         return results.rows[0]
     },
@@ -62,7 +62,8 @@ const Base = {
     update(id, fields) {
         try {
             let update = []
-
+            console.log(id)
+            console.log(fields)
             Object.keys(fields).map(key => {
                 const line = `${key} = '${fields[key]}'`
                 update.push(line)
